@@ -1,0 +1,14 @@
+m, n, rs_src, cs_src, rs_dst, cs_dst, result
+16, 16, 16, 1, 16, 1, PASS
+m, n, rs_src, cs_src, rs_dst, cs_dst, result
+16, 16, 1, 16, 1, 16, PASS
+m, n, rs_src, cs_src, rs_dst, cs_dst, result
+16, 16, 16, 1, 1, 16, PASS
+m, n, rs_src, cs_src, rs_dst, cs_dst, result
+16, 16, 1, 16, 16, 1, PASS
+m, n, rs_src, cs_src, rs_dst, cs_dst, result
+16, 16, 2, 16, 16, 2, PASS
+m, n, rs_src, cs_src, rs_dst, cs_dst, result
+16, 16, 16, 1, 1, 16, PASS
+m, n, rs_src, cs_src, rs_dst, cs_dst, result
+16, 16, 16, 1, 1, 16, PASS
