@@ -18,7 +18,7 @@ echo $CFLAGS
 
 # Build the timer
 # NOTE: need gnu99/gnu11 to get the POSIX compliance for timing
-gcc -std=gnu99 -O2 -c -DFUN_NAME_TST="test" timer_op_02.c -static -fPIC  
+gcc -std=gnu99 -O2 -c -DFUN_NAME_TST="test" ./src/timer_op_02.c -static -fPIC  
 
 
 # build the variants

@@ -19,10 +19,10 @@ echo $CFLAGS
 # gcc -std=c99 verify_op_02.c baseline_op_02.c -o run.x
 
 # Build the verifier code
-gcc -std=c99 -c -DFUN_NAME_REF="baseline" -DFUN_NAME_TST="test" verify_op_02.c 
+gcc -std=c99 -c -DFUN_NAME_REF="baseline" -DFUN_NAME_TST="test" ./src/verify_op_02.c 
 
 # Build the reference baseline
-gcc -std=c99 -c -DFUN_NAME="baseline" baseline_op_02.c
+gcc -std=c99 -c -DFUN_NAME="baseline" ./src/baseline_op_02.c
 
 # Build the variants
 gcc $CFLAGS -c -DFUN_NAME="test" $OP2_SUBMISSION_VAR01_FILE -o op2_var01.o
