@@ -20,6 +20,12 @@ STEP=16
 #MAX=8192
 #STEP=64
 
+# Increments to use in the tests
+# These are good debugging sizes
+MIN=2
+MAX=16
+STEP=2
+
 
 
 all: run_verifier run_bench
