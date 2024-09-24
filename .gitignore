@@ -1,6 +1,5 @@
 *.o
 *.x
 *.s
-*.csv
 .vscode
 *.png
