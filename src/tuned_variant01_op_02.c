@@ -21,6 +21,19 @@
 #define FUN_NAME baseline_transpose
 #endif
 
+enum dispatch_e {
+	ROW_ROW,
+	ROW_COL,
+	ROW_GEN,
+	COL_ROW,
+	COL_COL,
+	COL_GEN,
+	GEN_ROW,
+	GEN_COL,
+	GEN_GEN,
+	NUM_DISPATCH
+};
+
 void FUN_NAME( int m, int n,
 		float *src,
 		int rs_s, int cs_s,
