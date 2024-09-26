@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 #ifndef FUN_NAME
 #define FUN_NAME baseline_transpose
@@ -12,26 +13,61 @@ void basic_transpose(int m, int n, float *src, int rs_s, int cs_s, float *dst,
     }
 }
 
+typedef enum { ROW, COL, GEN, NUM_STRIDE } stride_e;
+
+typedef enum {
+    ROW_ROW,
+    ROW_COL,
+    ROW_GEN,
+    COL_ROW,
+    COL_COL,
+    COL_GEN,
+    GEN_ROW,
+    GEN_COL,
+    GEN_GEN,
+    NUM_DISPATCH
+} dispatch_e;
+
 void FUN_NAME(int m, int n, float *src, int rs_s, int cs_s, float *dst,
               int rs_d, int cs_d) {
 
-    if (cs_s == 1 && cs_d == 1) {
+    stride_e src_stride = cs_s == 1 ? ROW : rs_s == 1 ? COL : GEN;
+    stride_e dst_stride = cs_d == 1 ? ROW : rs_d == 1 ? COL : GEN;
+
+    dispatch_e dipatch = src_stride * NUM_STRIDE + dst_stride;
+
+    switch (dipatch) {
+    case ROW_ROW:
         basic_transpose(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
-    } else if (cs_s == 1 && rs_d == 1) {
+        break;
+    case ROW_COL:
         memcpy(dst, src, sizeof(float) * m * n);
-    } else if (cs_s == 1 && (rs_d > 1 && cs_d > 1)) {
+        break;
+    case ROW_GEN:
         basic_transpose(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
-    } else if (rs_s == 1 && cs_d == 1) {
+        break;
+    case COL_ROW:
         memcpy(dst, src, sizeof(float) * m * n);
-    } else if (rs_s == 1 && rs_d == 1) {
+        break;
+    case COL_COL:
         basic_transpose(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
-    } else if (rs_s == 1 && (rs_d > 1 && cs_d > 1)) {
+        break;
+    case COL_GEN:
         basic_transpose(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
-    } else if ((rs_d > 1 && cs_d > 1) && cs_d == 1) {
+        break;
+    case GEN_ROW:
         basic_transpose(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
-    } else if ((rs_d > 1 && cs_d > 1) && rs_d == 1) {
+        break;
+    case GEN_COL:
         basic_transpose(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
-    } else {
+        break;
+    case GEN_GEN:
         basic_transpose(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
+        break;
+    case NUM_DISPATCH: // really should not be possible to be here
+        break;
+    default:
+        fprintf(stderr, "Invalid strides, dispatch not possible");
+        break;
     }
 }
