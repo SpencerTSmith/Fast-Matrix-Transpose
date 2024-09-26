@@ -66,7 +66,7 @@ void FUN_NAME(int m, int n, float *src, int rs_s, int cs_s, float *dst,
         break;
     case NUM_DISPATCH: // really should not be possible to be here
         break;
-    default:
+    default: // or here
         fprintf(stderr, "Invalid strides, dispatch not possible");
         break;
     }
