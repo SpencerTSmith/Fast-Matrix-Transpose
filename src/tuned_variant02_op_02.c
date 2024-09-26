@@ -13,7 +13,7 @@ void basic_transpose(int m, int n, float *src, int rs_s, int cs_s, float *dst,
     }
 }
 
-typedef enum { ROW, COL, GEN, NUM_STRIDE } stride_e;
+typedef enum { ROW, COL, GEN, NUM_STRIDE } order_e;
 
 typedef enum {
     ROW_ROW,
@@ -31,8 +31,8 @@ typedef enum {
 void FUN_NAME(int m, int n, float *src, int rs_s, int cs_s, float *dst,
               int rs_d, int cs_d) {
 
-    stride_e src_stride = cs_s == 1 ? ROW : rs_s == 1 ? COL : GEN;
-    stride_e dst_stride = cs_d == 1 ? ROW : rs_d == 1 ? COL : GEN;
+    order_e src_stride = cs_s == 1 ? ROW : rs_s == 1 ? COL : GEN;
+    order_e dst_stride = cs_d == 1 ? ROW : rs_d == 1 ? COL : GEN;
 
     dispatch_e dipatch = src_stride * NUM_STRIDE + dst_stride;
 
