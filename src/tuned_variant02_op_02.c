@@ -31,10 +31,10 @@ typedef enum {
 void FUN_NAME(int m, int n, float *src, int rs_s, int cs_s, float *dst,
               int rs_d, int cs_d) {
 
-    order_e src_stride = cs_s == 1 ? ROW : rs_s == 1 ? COL : GEN;
-    order_e dst_stride = cs_d == 1 ? ROW : rs_d == 1 ? COL : GEN;
+    order_e src_order = cs_s == 1 ? ROW : rs_s == 1 ? COL : GEN;
+    order_e dst_order = cs_d == 1 ? ROW : rs_d == 1 ? COL : GEN;
 
-    dispatch_e dipatch = src_stride * NUM_STRIDE + dst_stride;
+    dispatch_e dipatch = src_order * NUM_STRIDE + dst_order;
 
     switch (dipatch) {
     case ROW_ROW:
@@ -65,6 +65,7 @@ void FUN_NAME(int m, int n, float *src, int rs_s, int cs_s, float *dst,
         basic_transpose(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
         break;
     case NUM_DISPATCH: // really should not be possible to be here
+        fprintf(stderr, "Invalid strides, dispatch not possible");
         break;
     default: // or here
         fprintf(stderr, "Invalid strides, dispatch not possible");
