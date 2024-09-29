@@ -11,7 +11,7 @@ OP2_BASELINE_FILE="baseline_op_02.c" #
 ############################################
 OP2_SUBMISSION_VAR01_FILE="./src/tuned_variant01_op_02.c" # <-- CHANGE ME!
 OP2_SUBMISSION_VAR02_FILE="./src/tuned_variant02_op_02.c" # <-- CHANGE ME!
-OP2_SUBMISSION_VAR03_FILE="./src/baseline_op_02.c" # <-- CHANGE ME!
+OP2_SUBMISSION_VAR03_FILE="./src/tuned_variant03_op_02.c" # <-- CHANGE ME!
 
 ######################################################
 # You can even change the compiler flags if you want #
