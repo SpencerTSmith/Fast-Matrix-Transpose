@@ -28,8 +28,10 @@ gcc -std=c99 -c -DFUN_NAME="baseline" ./src/baseline_op_02.c
 gcc $CFLAGS -c -DFUN_NAME="test" $OP2_SUBMISSION_VAR01_FILE -o op2_var01.o
 gcc $CFLAGS -c -DFUN_NAME="test" $OP2_SUBMISSION_VAR02_FILE -o op2_var02.o
 gcc $CFLAGS -c -DFUN_NAME="test" $OP2_SUBMISSION_VAR03_FILE -o op2_var03.o
+gcc $CFLAGS -c -DFUN_NAME="test" $OP2_SUBMISSION_VAR04_FILE -o op2_var04.o  # blocked transpose
 
 # Build the verifier
 gcc $CFLAGS verify_op_02.o baseline_op_02.o op2_var01.o -o ./run_test_op2_var01.x
 gcc $CFLAGS verify_op_02.o baseline_op_02.o op2_var02.o -o ./run_test_op2_var02.x
 gcc $CFLAGS verify_op_02.o baseline_op_02.o op2_var03.o -o ./run_test_op2_var03.x
+gcc $CFLAGS verify_op_02.o baseline_op_02.o op2_var04.o -o ./run_test_op2_var04.x
