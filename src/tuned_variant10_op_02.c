@@ -16,14 +16,14 @@ void basic_transpose(int m, int n, float *src, int rs_s, int cs_s, float *dst, i
 
 void blocked_transpose(int m, int n, float *src, int rs_s, int cs_s, float *dst,
                      int rs_d, int cs_d) {
-    for (int i = 0; i < m; i += BLOCK_SIZE) {
-        for (int j = 0; j < n; j += BLOCK_SIZE) {
-            int block_m = (i + BLOCK_SIZE > m) ? (m - i) : BLOCK_SIZE;
-            int block_n = (j + BLOCK_SIZE > n) ? (n - j) : BLOCK_SIZE;
+    for (int i = 0; i < m; i += BLOCK_SIZE) { // iterates over rows
+        for (int j = 0; j < n; j += BLOCK_SIZE) { // iterates over columns
+            int block_m = (i + BLOCK_SIZE > m) ? (m - i) : BLOCK_SIZE; // num rows in current block
+            int block_n = (j + BLOCK_SIZE > n) ? (n - j) : BLOCK_SIZE; // num cols in current block
             
-            for (int k = 0; k < block_m; ++k) {
-                for (int j = 0; m < block_n; ++m) {
-                    dst[(j + m) * rs_d + (i + k) * cs_d] = src[(i + k) * rs_s + (j + m) * cs_s];
+            for (int k = 0; k < block_m; ++k) { // transposes current block
+                for (int l = 0; l < block_n; ++l) {
+                    dst[(j + l) * rs_d + (i + k) * cs_d] = src[(i + k) * rs_s + (j + l) * cs_s];
                 }
             }
         }
