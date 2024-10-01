@@ -9,11 +9,12 @@ OP2_BASELINE_FILE="baseline_op_02.c" #
 # HOWEVER, CHANGE THESE LINES:             #
 # Replace the filenames with your variants #
 ############################################
-OP2_SUBMISSION_VAR01_FILE="./src/tuned_variant01_op_02.c" # <-- CHANGE ME!
-OP2_SUBMISSION_VAR02_FILE="./src/tuned_variant02_op_02.c" # <-- CHANGE ME!
-OP2_SUBMISSION_VAR03_FILE="./src/tuned_variant03_op_02.c" # <-- CHANGE ME!
+OP2_SUBMISSION_VAR01_FILE="./src/tuned_variant01_op_02.c"
+OP2_SUBMISSION_VAR02_FILE="./src/tuned_variant02_op_02.c"
+OP2_SUBMISSION_VAR03_FILE="./src/tuned_variant03_op_02.c"
 ### blocked transpose
-OP2_SUBMISSION_VAR04_FILE="./src/tuned_variant10_op_02.c"  # <-- CHANGE ME!
+OP2_SUBMISSION_VAR04_FILE="./src/tuned_variant10_op_02.c"
+OP2_SUBMISSION_VAR05_FILE="./src/tuned_variant11_op_02.c"
 
 ######################################################
 # You can even change the compiler flags if you want #
