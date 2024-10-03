@@ -23,15 +23,16 @@ class Plotter:
                 continue
 
             # Read the input file
-            df = pd.read_csv(infile)
+            df = pd.read_csv(infile, skipinitialspace=True) # ignores whitespace
 
 
-            if 'n' not in df.columns or 'm' not in df.columns:
+            if 'm' not in df.columns or 'n' not in df.columns:
+                # print(df.columns)
                 print(f'File \"{infile}\" is missing necessary columns (m, n). Skipping.')
                 continue
 
             # Create a dataframe for the size of the matrix
-            df['size'] = df['m'] * df['n']
+            df['size'] = int(df['m']) * int(df['n'])
             
             # Check which matrix is being observed
             square_matrices = df[df['m'] == df['n']]
