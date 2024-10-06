@@ -22,9 +22,9 @@ STEP=16
 
 # Increments to use in the tests
 # These are good debugging sizes
-MIN=4
-MAX=32
-STEP=4
+MIN=8
+MAX=64
+STEP=8	
 
 
 
