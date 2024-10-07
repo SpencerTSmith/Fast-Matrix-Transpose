@@ -6,9 +6,9 @@
 
 # Increments to use in the tests
 # These are good debugging sizes
-MIN=16
-MAX=2048
-STEP=16
+# MIN=16
+# MAX=2048
+# STEP=16
 
 # These are better benchmarking sizes
 #MIN=32
@@ -22,9 +22,9 @@ STEP=16
 
 # Increments to use in the tests
 # These are good debugging sizes
-MIN=8
-MAX=64
-STEP=8	
+MIN=16
+MAX=512
+STEP=16
 
 
 

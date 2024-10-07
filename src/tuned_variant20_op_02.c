@@ -25,48 +25,11 @@ typedef enum {
     NUM_DISPATCH
 } dispatch_e;
 
-void transpose_ROW_ROW(int m, int n, float *src, int rs_s, int cs_s, float *dst,
-                       int rs_d, int cs_d) {
-    for (int i = 0; i < m; i += BLOCK_SIZE) { // iterates over rows
-        int block_m = (i + BLOCK_SIZE > m)
-                          ? (m - i)
-                          : BLOCK_SIZE; // num rows in current block
-
-        for (int j = 0; j < n; j += BLOCK_SIZE) { // iterates over columns
-            int block_n = (j + BLOCK_SIZE > n)
-                              ? (n - j)
-                              : BLOCK_SIZE; // num cols in current block
-
-            for (int k = 0; k < block_m; ++k) { // transposes current block
-                for (int l = 0; l < block_n; ++l) {
-                    dst[(j + l) * rs_d + (i + k)] =
-                        src[(i + k) * rs_s + (j + l)];
-                }
-            }
-        }
-    }
-    // for (int i = 0; i < m; ++i) {
-    //   for (int j = 0; j < n; ++j) {
-    //     dst[j * rs_d + i] = src[i * rs_s + j];
-    //   }
-    // }
-}
-
 void transpose_ROW_GEN(int m, int n, float *src, int rs_s, int cs_s, float *dst,
                        int rs_d, int cs_d) {
     for (int i = 0; i < m; ++i) {
         for (int j = 0; j < n; ++j) {
             dst[j * rs_d + i * cs_d] = src[i * rs_s + j];
-        }
-    }
-}
-
-void transpose_COL_COL(int m, int n, float *src, int rs_s, int cs_s, float *dst,
-                       int rs_d, int cs_d) {
-    // rearrange accessing so that it goes contiguously across
-    for (int j = 0; j < n; ++j) {
-        for (int i = 0; i < m; ++i) {
-            dst[j + i * cs_d] = src[i + j * cs_s];
         }
     }
 }
@@ -194,8 +157,8 @@ void simd_8x8_transpose(float *src, float *dst, int i, int j, int r_stride,
     _mm256_storeu_ps(&dst[(j + 7) * stride + i], t07);
 }
 
-void blocked_transpose(int m, int n, float *src, int rs_s, int cs_s, float *dst,
-                       int rs_d, int cs_d) {
+void blocked_transpose_ROW_ROW(int m, int n, float *src, int rs_s, int cs_s,
+                               float *dst, int rs_d, int cs_d) {
     // iterates over rows
     for (int i = 0; i < m; i += BLOCK_SIZE) {
         // num rows in current block
@@ -207,6 +170,25 @@ void blocked_transpose(int m, int n, float *src, int rs_s, int cs_s, float *dst,
             // transposes current block
             for (int k = i; k < block_m; k += KERNEL_SIZE_8x8) {
                 for (int l = j; l < block_n; l += KERNEL_SIZE_8x8) {
+                    simd_8x8_transpose(src, dst, k, l, rs_s, cs_s);
+                }
+            }
+        }
+    }
+}
+
+void blocked_transpose_COL_COL(int m, int n, float *src, int rs_s, int cs_s,
+                               float *dst, int rs_d, int cs_d) {
+    // iterate over cols here, since contiguous
+    for (int j = 0; j < n; j += BLOCK_SIZE) {
+        int block_n = (j + BLOCK_SIZE > n) ? (n - j) : BLOCK_SIZE;
+
+        for (int i = 0; i < m; i += BLOCK_SIZE) {
+            int block_m = (i + BLOCK_SIZE > m) ? (m - i) : BLOCK_SIZE;
+
+            // same idea, cols first since contiguous
+            for (int l = j; l < block_n; l += KERNEL_SIZE_8x8) {
+                for (int k = i; k < block_m; k += KERNEL_SIZE_8x8) {
                     simd_8x8_transpose(src, dst, k, l, rs_s, cs_s);
                 }
             }
@@ -226,7 +208,7 @@ void FUN_NAME(int m, int n, float *src, int rs_s, int cs_s, float *dst,
     // however
     switch (dipatch) {
     case ROW_ROW:
-        blocked_transpose(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
+        blocked_transpose_ROW_ROW(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
         break;
     case ROW_COL:
         memcpy(dst, src, sizeof(float) * m * n);
@@ -238,7 +220,7 @@ void FUN_NAME(int m, int n, float *src, int rs_s, int cs_s, float *dst,
         memcpy(dst, src, sizeof(float) * m * n);
         break;
     case COL_COL:
-        transpose_COL_COL(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
+        blocked_transpose_COL_COL(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
         break;
     case COL_GEN:
         transpose_COL_GEN(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
