@@ -3,7 +3,7 @@
 #define FUN_NAME baseline_transpose
 #endif
 
-// change block size for analysis
+// change block size for analysis 
 #define BLOCK_SIZE 32
 
 void basic_transpose(int m, int n, float *src, int rs_s, int cs_s, float *dst, int rs_d, int cs_d) {
@@ -30,13 +30,21 @@ void blocked_transpose(int m, int n, float *src, int rs_s, int cs_s, float *dst,
     }
 }
 
+int calculate_optimal_block_size(int cache_size, int element_size) {
+    return (cache_size / element_size) / 2; // Divided by 2 for some overhead
+}
+
 void FUN_NAME(int m, int n, float *src, int rs_s, int cs_s, float *dst,
               int rs_d, int cs_d) {
 
-    if (m > BLOCK_SIZE || n > BLOCK_SIZE) { // Call blocked transpose if the matrix is large enough to benefit
+    int cache_size = 16384 * 1024; // Cache size in bytes
+    int element_size = sizeof(float);
+    int optimal_block_size = calculate_optimal_block_size(cache_size, element_size);
+
+    // Choose which transpose function to use based on matrix size and block size
+    if (m > optimal_block_size || n > optimal_block_size) {
         blocked_transpose(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
     } else {// Otherwise, fall back on the basic transpose or memcpy
-        
         if (cs_s == 1 && cs_d == 1) {
             basic_transpose(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
         } else if (cs_s == 1 && rs_d == 1) {
