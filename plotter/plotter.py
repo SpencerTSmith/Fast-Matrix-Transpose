@@ -3,6 +3,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import sys
 import argparse
+import numpy as np
 from pathlib import Path
 
 class Plotter:
@@ -32,24 +33,43 @@ class Plotter:
                 continue
 
             # Create a dataframe for the size of the matrix
-            df['size'] = int(df['m']) * int(df['n'])
-            
+            df['size'] = df['m'] * df['n']
+
+            print(df['size'])
+
             # Check which matrix is being observed
             square_matrices = df[df['m'] == df['n']]
+            print(square_matrices)
             rectangular_matrices = df[df['m'] != df['n']]
+            print(rectangular_matrices)
 
-            # Plotting square matrices
-            if not square_matrices.empty:
-                plt.plot(df['size'], square_matrices['GB_per_s'], label=f"{sort_name} (Square)", linestyle='-')
 
-            # Plotting rectangular matrices
-            if not rectangular_matrices.empty:
-                plt.plot(df['size'], rectangular_matrices['GB_per_s'], label=f"{sort_name} (Rectangular)", linestyle='--')
+            # Plotting matrices
+            plt.plot(df['size'], df['GB_per_s'], label=f"{sort_name}", linestyle='-')
 
-        plt.title("Matrix Throughput Comparison")
+
+        
+        df['isSquare'] = np.where(df['m'] != df['n'], "Rectangle", "Square") # np.where
+
+        n=0
+
+        if "scc" in str(infile):
+            df['mType'] = "Both Col Major"
+        elif "scr" in str(infile):
+            df['mType'] = "A = Col Maj, B = Row Maj"
+        elif "src" or "rrc" in str(infile):
+            df['mType'] = "A = row Maj, B = Col Maj"
+            if "rrc" in str(infile): n=1
+        elif "srr" in str(infile):
+            df['mType'] = "Both Row Major"
+        elif "sgg" in str(infile):
+            df['mType'] = "Both General Stride"
+            
+        
+        plt.title("" + df['isSquare'][n] +"; "+ df['mType'][0] + " Matrix")
         plt.xlabel('Matrix size (m*n)')
         plt.ylabel('Throughput (GB/s)')
-        plt.ylim(0.0, 25.0)
+        plt.ylim(0.0, 300.0)
         plt.legend(loc="upper right")
         if (self.short_x):
             plt.xlim(0, 1000)
@@ -70,7 +90,7 @@ def main():
     args = parser.parse_args()
 
     csv_paths = [Path(csv_file) for csv_file in args.csv_files]
-    # print(f'{csv_paths}')
+    print(f'{csv_paths}')
     if args.output:
         plotter = Plotter(interactive=args.interactive, short_x=args.short_x, output=args.output)
     else:

@@ -22,7 +22,8 @@ Then you can run the plotter with:
 
 ```bash
 ./plotter.py <csv_filename>
-# e.g. ./plotter.py data/example.csv
+# e.g. ./plotter.py data/square/* to see all
+# e.g. ./plotter.py data/square/*scc* to see all where Both A and B are Column Major
 ```
 
 ## More on Python Virtual Environments
