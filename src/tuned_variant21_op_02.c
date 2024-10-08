@@ -10,6 +10,8 @@
 #define FUN_NAME baseline_transpose
 #endif
 
+// SIMD based kernel blocked transpose variant
+
 typedef enum { ROW, COL, GEN, NUM_STRIDE } order_e;
 
 typedef enum {

@@ -6,6 +6,8 @@
 #define KERNEL_SIZE_4x4 4
 #define KERNEL_SIZE_8x8 8
 
+// basic SIMD based kernel variant
+
 void simd_4x4_transpose(float *src, float *dst) {
   __m256 input00_07 = _mm256_loadu_ps(&src[0]);
   __m256 input08_15 = _mm256_loadu_ps(&src[0 + 8]);
