@@ -16,19 +16,15 @@
 #STEP=32
 
 # These are bigger benchmarking sizes, but you may run out of memory on the general strides test
-#MIN=64
-#MAX=8192
-#STEP=64
+# MIN=64
+# MAX=8192
+# STEP=64
 
-# Increments to use in the tests
-# These are good debugging sizes
 MIN=16
 MAX=512
 STEP=16
 
-
-
-all: run_verifier run_bench
+all: clean run_verifier run_bench
 
 run_verifier: run_verifier_op2_var01 run_verifier_op2_var02 run_verifier_op2_var03 run_verifier_op2_var04 run_verifier_op2_var05
 
