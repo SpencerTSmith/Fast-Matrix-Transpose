@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define BLOCK_SIZE 256
+#define BLOCK_SIZE 128
 #define KERNEL_SIZE_4x4 4
 #define KERNEL_SIZE_8x8 8
 
@@ -85,6 +85,7 @@ void transpose_GEN_GEN(int m, int n, float *src, int rs_s, int cs_s, float *dst,
     }
 }
 
+// doesn't work right now
 void simd_4x4_transpose(float *src, float *dst) {
     __m256 rows0_2 = _mm256_loadu_ps(&src[0]);
     __m256 rows2_3 = _mm256_loadu_ps(&src[0 + 8]);
@@ -157,17 +158,16 @@ void simd_8x8_transpose(float *src, float *dst, int i, int j, int r_stride,
     _mm256_storeu_ps(&dst[(j + 7) * stride + i], t07);
 }
 
+// will only work for transposes where the blocks can evenly fit in thread
+// blocks
 void blocked_transpose_ROW_ROW(int m, int n, float *src, int rs_s, int cs_s,
                                float *dst, int rs_d, int cs_d) {
 #pragma omp parallel for collapse(2)
     for (int i = 0; i < m; i += BLOCK_SIZE) {
-        // num rows in current block
-        int block_m = (i + BLOCK_SIZE > m) ? (m - i) : BLOCK_SIZE;
-        // iterates over columns
         for (int j = 0; j < n; j += BLOCK_SIZE) {
-            // num cols in current block
-            int block_n = (j + BLOCK_SIZE > n) ? (n - j) : BLOCK_SIZE;
-            // transposes current block
+            int block_m = (i + BLOCK_SIZE > m) ? (m - i) : i + BLOCK_SIZE;
+            int block_n = (j + BLOCK_SIZE > n) ? (n - j) : j + BLOCK_SIZE;
+
             for (int k = i; k < block_m; k += KERNEL_SIZE_8x8) {
                 for (int l = j; l < block_n; l += KERNEL_SIZE_8x8) {
                     simd_8x8_transpose(src, dst, k, l, rs_s, cs_s);
@@ -177,15 +177,15 @@ void blocked_transpose_ROW_ROW(int m, int n, float *src, int rs_s, int cs_s,
     }
 }
 
+// will only work for transposes where the blocks can evenly fit in thread
+// blocks
 void blocked_transpose_COL_COL(int m, int n, float *src, int rs_s, int cs_s,
                                float *dst, int rs_d, int cs_d) {
 #pragma omp parallel for collapse(2)
-    // iterate over cols here, since contiguous
     for (int j = 0; j < n; j += BLOCK_SIZE) {
-        int block_n = (j + BLOCK_SIZE > n) ? (n - j) : BLOCK_SIZE;
-
         for (int i = 0; i < m; i += BLOCK_SIZE) {
-            int block_m = (i + BLOCK_SIZE > m) ? (m - i) : BLOCK_SIZE;
+            int block_n = (j + BLOCK_SIZE > n) ? (n - j) : j + BLOCK_SIZE;
+            int block_m = (i + BLOCK_SIZE > m) ? (m - i) : i + BLOCK_SIZE;
 
             // same idea, cols first since contiguous
             for (int l = j; l < block_n; l += KERNEL_SIZE_8x8) {

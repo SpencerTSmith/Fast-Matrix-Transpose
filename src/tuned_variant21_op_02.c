@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define BLOCK_SIZE 512
+#define BLOCK_SIZE 16
 #define KERNEL_SIZE_4x4 4
 #define KERNEL_SIZE_8x8 8
 
@@ -164,11 +164,11 @@ void blocked_transpose_ROW_ROW(int m, int n, float *src, int rs_s, int cs_s,
     // iterates over rows
     for (int i = 0; i < m; i += BLOCK_SIZE) {
         // num rows in current block
-        int block_m = (i + BLOCK_SIZE > m) ? (m - i) : BLOCK_SIZE;
+        int block_m = (i + BLOCK_SIZE > m) ? (m - i) : i + BLOCK_SIZE;
         // iterates over columns
         for (int j = 0; j < n; j += BLOCK_SIZE) {
             // num cols in current block
-            int block_n = (j + BLOCK_SIZE > n) ? (n - j) : BLOCK_SIZE;
+            int block_n = (j + BLOCK_SIZE > n) ? (n - j) : j + BLOCK_SIZE;
             // transposes current block
             for (int k = i; k < block_m; k += KERNEL_SIZE_8x8) {
                 for (int l = j; l < block_n; l += KERNEL_SIZE_8x8) {
@@ -183,10 +183,10 @@ void blocked_transpose_COL_COL(int m, int n, float *src, int rs_s, int cs_s,
                                float *dst, int rs_d, int cs_d) {
     // iterate over cols here, since contiguous
     for (int j = 0; j < n; j += BLOCK_SIZE) {
-        int block_n = (j + BLOCK_SIZE > n) ? (n - j) : BLOCK_SIZE;
+        int block_n = (j + BLOCK_SIZE > n) ? (n - j) : j + BLOCK_SIZE;
 
         for (int i = 0; i < m; i += BLOCK_SIZE) {
-            int block_m = (i + BLOCK_SIZE > m) ? (m - i) : BLOCK_SIZE;
+            int block_m = (i + BLOCK_SIZE > m) ? (m - i) : i + BLOCK_SIZE;
 
             // same idea, cols first since contiguous
             for (int l = j; l < block_n; l += KERNEL_SIZE_8x8) {
