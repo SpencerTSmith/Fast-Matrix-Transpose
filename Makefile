@@ -20,9 +20,9 @@
 # MAX=8192
 # STEP=64
 
-MIN=128
-MAX=2048
-STEP=128
+MIN=256
+MAX=1408
+STEP=256
 
 all: clean run_verifier run_bench
 

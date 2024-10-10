@@ -264,7 +264,6 @@ void blocked_transpose_ROW_ROW(int m, int n, float *src, int rs_s, int cs_s,
 
 void blocked_transpose_ROW_ROW_omp(int m, int n, float *src, int rs_s, int cs_s,
                                    float *dst, int rs_d, int cs_d) {
-    printf("ayup\n");
 #pragma omp parallel for collapse(2)
     for (int i = 0; i < m; i += THREAD_SIZE) {
         for (int j = 0; j < n; j += THREAD_SIZE) {
