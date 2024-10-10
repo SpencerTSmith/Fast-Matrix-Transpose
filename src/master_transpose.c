@@ -264,7 +264,7 @@ void blocked_transpose_ROW_ROW(int m, int n, float *src, int rs_s, int cs_s,
 
 void blocked_transpose_ROW_ROW_omp(int m, int n, float *src, int rs_s, int cs_s,
                                    float *dst, int rs_d, int cs_d) {
-#pragma omp parallel for collapse(2)
+#pragma omp parallel for collapse(2) num_threads(4)
     for (int i = 0; i < m; i += THREAD_SIZE) {
         for (int j = 0; j < n; j += THREAD_SIZE) {
             int block_m = (i + THREAD_SIZE > m) ? (m - i) : i + THREAD_SIZE;
@@ -315,7 +315,7 @@ void blocked_transpose_COL_COL(int m, int n, float *src, int rs_s, int cs_s,
 
 void blocked_transpose_COL_COL_omp(int m, int n, float *src, int rs_s, int cs_s,
                                    float *dst, int rs_d, int cs_d) {
-#pragma omp parallel for collapse(2)
+#pragma omp parallel for collapse(2) num_threads(4)
     for (int j = 0; j < n; j += THREAD_SIZE) {
         for (int i = 0; i < m; i += THREAD_SIZE) {
             int block_n = (j + THREAD_SIZE > n) ? (n - j) : j + THREAD_SIZE;
