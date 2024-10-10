@@ -1,13 +1,13 @@
 #include <string.h>
 #ifndef FUN_NAME
-#define FUN_NAME baseline_transpose
+#define FUN_NAME optimized_double_blocked_transpose
 #endif
 
-// change block size for analysis 
-#define BLOCK_SIZE 32
+// Change block size for analysis
+#define BLOCK_SIZE 32 // Outer block size determined from variation 10
+#define INNER_BLOCK_SIZE 4 
 
-void basic_transpose(int m, int n, float *src, int rs_s, int cs_s, float *dst,
-                     int rs_d, int cs_d) {
+void basic_transpose(int m, int n, float *src, int rs_s, int cs_s, float *dst, int rs_d, int cs_d) {
     for (int i = 0; i < m; ++i) {
         for (int j = 0; j < n; ++j) {
             dst[j * rs_d + i * cs_d] = src[i * rs_s + j * cs_s];
@@ -15,22 +15,20 @@ void basic_transpose(int m, int n, float *src, int rs_s, int cs_s, float *dst,
     }
 }
 
-void blocked_transpose(int m, int n, float *src, int rs_s, int cs_s, float *dst,
-                       int rs_d, int cs_d) {
-#pragma omp parallel for collapse(2)
-    for (int i = 0; i < m; i += BLOCK_SIZE) {     // iterates over rows
-        for (int j = 0; j < n; j += BLOCK_SIZE) { // iterates over columns
-            int block_m = (i + BLOCK_SIZE > m)
-                              ? (m - i)
-                              : BLOCK_SIZE; // num rows in current block
-            int block_n = (j + BLOCK_SIZE > n)
-                              ? (n - j)
-                              : BLOCK_SIZE; // num cols in current block
-
-            for (int k = 0; k < block_m; ++k) { // transposes current block
-                for (int l = 0; l < block_n; ++l) {
-                    dst[(j + l) * rs_d + (i + k) * cs_d] =
-                        src[(i + k) * rs_s + (j + l) * cs_s];
+// Double blocked transpose
+void double_blocked_transpose(int m, int n, float *src, int rs_s, int cs_s, float *dst,
+                               int rs_d, int cs_d) {
+    for (int i = 0; i < m; i += BLOCK_SIZE) { // Outer block iteration over rows
+        for (int j = 0; j < n; j += BLOCK_SIZE) { // Outer block iteration over columns
+            // Inner block iteration
+            for (int ii = i; ii < i + BLOCK_SIZE && ii < m; ii += INNER_BLOCK_SIZE) {
+                for (int jj = j; jj < j + BLOCK_SIZE && jj < n; jj += INNER_BLOCK_SIZE) {
+                    // Process inner block
+                    for (int k = 0; k < INNER_BLOCK_SIZE && (ii + k) < m; ++k) {
+                        for (int l = 0; l < INNER_BLOCK_SIZE && (jj + l) < n; ++l) {
+                            dst[(jj + l) * rs_d + (ii + k) * cs_d] = src[(ii + k) * rs_s + (jj + l) * cs_s];
+                        }
+                    }
                 }
             }
         }
@@ -50,9 +48,8 @@ void FUN_NAME(int m, int n, float *src, int rs_s, int cs_s, float *dst,
 
     // Choose which transpose function to use based on matrix size and block size
     if (m > optimal_block_size || n > optimal_block_size) {
-        blocked_transpose(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
-    } else { // Otherwise, fall back on the basic transpose or memcpy
-
+        double_blocked_transpose(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
+    } else {// Otherwise, fall back on the basic transpose or memcpy
         if (cs_s == 1 && cs_d == 1) {
             basic_transpose(m, n, src, rs_s, cs_s, dst, rs_d, cs_d);
         } else if (cs_s == 1 && rs_d == 1) {
